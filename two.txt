@@ -1,0 +1,3 @@
+这个没有add
+commit after
+change，git每次提交之前都需要add，不然commit不了，当修改文件多了的时候是不是太麻烦了
