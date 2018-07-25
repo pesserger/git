@@ -17,7 +17,7 @@ https://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b
 
 使用git checkout -- first.txt 可以从工作区里面检出，把当前工作区内容替换掉
 不过可以看到当使用add之后在使用checkout，工作区文件就恢复不了
-使用 git reset head first.txt 就看把暂存区里面的修改删除从而可以checkout了
+使用 git reset head first.txt 就把暂存区里面的修改删除从而可以checkout了
 
 
 本地文件删除了，如果不需要可以把他们从版本库里面删除掉，使用Git rm 命令，如果本地误删了可以使用git checkout -- file恢复过来
@@ -41,7 +41,95 @@ app却可以缓存更原始的数据。但是具体的数据却不是看到的�
 
 但是这里面有个问题，怎么忽略一些文件的更改
 使用ssh-keygen -t rsa -C "pesserger@163.com"，生成公匙私匙，保存的位置默认就可以了，然后在github.com里面添加，使用的时候
-就可以验证我和github是同一个账户了
+就可以验证和github是同一个账户了
+
+在向远端推送的时候本地和远端不一样，需要先pull合并之后在推送，不然报错，远端的添加更改时间就是向本地仓提交的时间，所以远端仓和本地仓是一致的，包括创建时间
+git remote add origin git@github.com:pesserger/git.git
+>git push -u origin master
+The authenticity of host 'github.com (52.74.223.119)' can't be established.
+RSA key fingerprint is SHA256:nThbg6kXUpJWGl7E1IGOCspRomTxdCARLviKw6E5SY8.
+Are you sure you want to continue connecting (yes/no)? yes
+Warning: Permanently added 'github.com,52.74.223.119' (RSA) to the list of known hosts.
+To git@github.com:pesserger/git.git
+ ! [rejected]        master -> master (fetch first)
+error: failed to push some refs to 'git@github.com:pesserger/git.git'
+hint: Updates were rejected because the remote contains work that you do
+hint: not have locally. This is usually caused by another repository pushing
+hint: to the same ref. You may want to first integrate the remote changes
+hint: (e.g., 'git pull ...') before pushing again.
+hint: See the 'Note about fast-forwards' in 'git push --help' for details.
+
+git remote remove -v
+
+git pull origin master:master 这样子为什么报错
+Warning: Permanently added the RSA host key for IP address '13.229.188.59' to the list of known hosts.
+From github.com:pesserger/git
+ ! [rejected]        master     -> master  (non-fast-forward)
+ 
+ 
+
+git pull origin master
+
+From github.com:pesserger/git
+ * branch            master     -> FETCH_HEAD
+Merge made by the 'recursive' strategy.
+ README.md | 2 ++
+ 1 file changed, 2 insertions(+)
+ create mode 100644 README.md
+ 
+ 
+git remote add这个命令其实就是添加个别名 origin 代表git@github.com:pesserger/git.git这个仓库，另外仓库还有分支
+所以获取的时候还需要指定分支名称
+git remote add 可以添加github上面的所有仓库，不只是自己的，不过提交的时候就不一定了
+比如git remote add tt git@github.com:antirez/redis.git
+然后就可以git fetch tt 4.0 下载4.0这个分支下面的内容了
+
+但是git怎么删除不需要的哪些文件
+可以使用.gitignore 添加提交时候忽略的文件类型
 
 
+在使用yum安装php之后，使用相同版本的php源码，安装所需要的扩展，
+因为扩展不好找呀，有些根本就搜索不到，pecl有的还好说没有的就比较麻烦l
+不管怎么安装都需要使用phpize这个命令
+/usr/bin/phpize //生成configure文件
+./configure –with-php-config=/usr/bin/php-config
+make
+make install
+
+http://php.net/get/php-7.1.18.tar.bz2/from/a/mirror
+可以下载php，改下版本号如果存在就可以下载了，不存在就没有，比乱搜索强
+
+git fetch 
+git merge tt/4.0 把下载的显示出来
+不过当你从远端获取分支然后合并，之后在删除之后，git文件夹已经很大了，因为历史记录还在，随着操作次数增多，git文件只会越来越大。
+怎么减小呢，把那些删除的文件的历史记录也删除掉
+下面这篇文章还是比较有效的
+https://www.cnblogs.com/shines77/p/3460274.html
+步骤三: 清理和回收空间
+
+虽然上面我们已经删除了文件, 但是我们的repo里面仍然保留了这些objects, 等待垃圾回收(GC), 所以我们要用命令彻底清除它, 并收回空间.
+
+命令如下:
+
+复制代码
+$ rm -rf .git/refs/original/
+
+$ git reflog expire --expire=now --all
+
+$ git gc --prune=now
+
+Counting objects: 2437, done.
+# Delta compression using up to 4 threads.
+# Compressing objects: 100% (1378/1378), done.
+# Writing objects: 100% (2437/2437), done.
+# Total 2437 (delta 1461), reused 1802 (delta 1048)
+
+$ git gc --aggressive --prune=now
+
+Counting objects: 2437, done.
+# Delta compression using up to 4 threads.
+# Compressing objects: 100% (2426/2426), done.
+# Writing objects: 100% (2437/2437), done.
+# Total 2437 (delta 1483), reused 0 (delta 0)
+复制代码
 
